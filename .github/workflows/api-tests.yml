@@ -131,4 +131,4 @@ jobs:
       # Run the Postman collection tests against the running services
       # This executes all requests in the collection and validates responses
       - name: Run API tests
-        run: postman collection run "postman/collections/Accounts API.postman_collection.json"
+        run: postman collection run "postman/collections/Accounts API.postman_collection.json" --env-var "baseUrl=http://localhost:3002"
