@@ -7,8 +7,8 @@ CLUSTER_NAME="${CLUSTER_NAME:-demo}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PARENT_DIR="$(cd "${ROOT_DIR}/.." && pwd)"
 
-IDENTITY_DIR="${IDENTITY_DIR:-${PARENT_DIR}/identity-api}"
-CATALOG_DIR="${CATALOG_DIR:-${PARENT_DIR}/catalog-api}"
+IDENTITY_DIR="${IDENTITY_DIR:-${PARENT_DIR}/identity-service}"
+CATALOG_DIR="${CATALOG_DIR:-${PARENT_DIR}/catalog-service}"
 ACCOUNTS_DIR="${ACCOUNTS_DIR:-${ROOT_DIR}}"
 
 # required Postman vars
@@ -45,9 +45,9 @@ if kind get clusters | grep -qx "${CLUSTER_NAME}"; then
   echo "✅ Kind cluster '${CLUSTER_NAME}' already exists"
 else
   echo "🐳 Creating kind cluster '${CLUSTER_NAME}'"
-  # expects accounts-api/kind-config.yaml (optional). If you don’t have it, remove --config.
-  if [[ -f "${ACCOUNTS_DIR}/kind-config.yaml" ]]; then
-    kind create cluster --name "${CLUSTER_NAME}" --config "${ACCOUNTS_DIR}/kind-config.yaml"
+  # expects accounts-api/k8s/kind-config.yaml (optional). If you don’t have it, remove --config.
+  if [[ -f "${ACCOUNTS_DIR}/k8s/kind-config.yaml" ]]; then
+    kind create cluster --name "${CLUSTER_NAME}" --config "${ACCOUNTS_DIR}/k8s/kind-config.yaml"
   else
     kind create cluster --name "${CLUSTER_NAME}"
   fi

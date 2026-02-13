@@ -4,9 +4,9 @@ set -euo pipefail
 # teardown-demo.sh
 #
 # Usage:
-#   ./teardown-demo.sh                 # real deletion
-#   ./teardown-demo.sh --dry-run       # show what would be deleted
-#   DELETE_CLUSTER=1 ./teardown-demo.sh
+#   ./scripts/teardown-demo.sh                 # real deletion
+#   ./scripts/teardown-demo.sh --dry-run       # show what would be deleted
+#   DELETE_CLUSTER=1 ./scripts/teardown-demo.sh
 #
 # Flags:
 #   --dry-run | -n     Print actions, do not delete anything
@@ -129,18 +129,7 @@ echo "🚧 Removing ingress-nginx (kind install)"
 run "kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml --ignore-not-found=true"
 
 #####################################
-# 8) Local manifest cleanup
-#####################################
-if [[ -f "${POSTMAN_DS_LOCAL}" ]]; then
-  if [[ "${DRY_RUN}" == "1" ]]; then
-    echo "DRY-RUN ▶ rm -f ${POSTMAN_DS_LOCAL}"
-  else
-    rm -f "${POSTMAN_DS_LOCAL}"
-  fi
-fi
-
-#####################################
-# 9) Optional cluster delete
+# 8) Optional cluster delete
 #####################################
 if [[ "${DELETE_CLUSTER:-0}" == "1" ]]; then
   echo "💣 Deleting kind cluster '${CLUSTER_NAME}'"
