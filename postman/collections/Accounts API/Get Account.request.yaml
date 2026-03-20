@@ -1,0 +1,34 @@
+method: GET
+order: 2000
+pathVariables:
+  - description: The account ID
+    key: id
+    value: a1
+scripts:
+  - code: |-
+      pm.test('Status code is 200', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('Response has account object and balance', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData).to.have.property('account');
+          pm.expect(jsonData).to.have.property('balance');
+      });
+
+      pm.test('Account has required fields', function () {
+          const account = pm.response.json().account;
+          pm.expect(account).to.have.property('id');
+          pm.expect(account).to.have.property('userId');
+          pm.expect(account).to.have.property('type');
+          pm.expect(account).to.have.property('createdAt');
+      });
+
+      pm.test('Balance is a number', function () {
+          const balance = pm.response.json().balance;
+          pm.expect(balance).to.be.a('number');
+      });
+    language: text/javascript
+    type: afterResponse
+type: http
+url: "{{baseUrl}}/accounts/:id"

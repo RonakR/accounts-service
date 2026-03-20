@@ -1,0 +1,51 @@
+name: Success - User Onboarded
+status: 201
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  mode: raw
+  options:
+    raw:
+      language: json
+  raw: |
+    {
+      "user": {
+        "id": "usr-8a4b2c1d-3e5f-6g7h-8i9j-0k1l2m3n4o5p",
+        "name": "John Doe",
+        "email": "john@example.com",
+        "createdAt": "2024-01-15T12:00:00.000Z"
+      },
+      "account": {
+        "id": "acc-9b5c3d2e-4f6g-7h8i-9j0k-1l2m3n4o5p6q",
+        "userId": "usr-8a4b2c1d-3e5f-6g7h-8i9j-0k1l2m3n4o5p",
+        "type": "standard",
+        "createdAt": "2024-01-15T12:00:00.000Z"
+      },
+      "assignment": {
+        "id": "asgn-1c6d4e3f-5g7h-8i9j-0k1l-2m3n4o5p6q7r",
+        "userId": "usr-8a4b2c1d-3e5f-6g7h-8i9j-0k1l2m3n4o5p",
+        "productId": "product-123",
+        "assignedAt": "2024-01-15T12:00:00.000Z"
+      },
+      "balance": 50
+    }
+request:
+  method: POST
+  url:
+    raw: "{{baseUrl}}/accounts/onboard"
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    mode: raw
+    options:
+      raw:
+        language: json
+    raw: |
+      {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "productId": "product-123",
+        "initialCredit": 50
+      }

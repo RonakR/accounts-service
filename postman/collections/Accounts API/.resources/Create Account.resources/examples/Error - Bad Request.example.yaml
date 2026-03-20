@@ -1,0 +1,32 @@
+name: Error - Bad Request
+status: 400
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  mode: raw
+  options:
+    raw:
+      language: json
+  raw: |
+    {
+      "error": "Bad Request",
+      "message": "Missing required field: userId",
+      "statusCode": 400
+    }
+request:
+  method: POST
+  url:
+    raw: "{{baseUrl}}/accounts"
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    mode: raw
+    options:
+      raw:
+        language: json
+    raw: |
+      {
+        "type": "standard"
+      }

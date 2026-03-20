@@ -1,0 +1,35 @@
+body:
+  content: |-
+    {
+    	"amount": 100
+    }
+  type: text
+headers:
+  - key: Content-Type
+    value: application/json
+method: POST
+order: 4000
+pathVariables:
+  - description: The account ID
+    key: id
+    value: a1
+scripts:
+  - code: |-
+      pm.test('Status code is 200', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('Response has accountId and balance', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData).to.have.property('accountId');
+          pm.expect(jsonData).to.have.property('balance');
+      });
+
+      pm.test('Balance is a number', function () {
+          const balance = pm.response.json().balance;
+          pm.expect(balance).to.be.a('number');
+      });
+    language: text/javascript
+    type: afterResponse
+type: http
+url: "{{baseUrl}}/accounts/:id/credit"

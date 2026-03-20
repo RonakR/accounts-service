@@ -1,0 +1,39 @@
+body:
+  content: |-
+    {
+    	"userId": "u1",
+    	"type": "standard"
+    }
+  type: text
+headers:
+  - key: Content-Type
+    value: application/json
+method: POST
+order: 1000
+scripts:
+  - code: |-
+      pm.test('Status code is 201', function () {
+          pm.response.to.have.status(201);
+      });
+
+      pm.test('Response has account object', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData).to.have.property('account');
+      });
+
+      pm.test('Account has required fields', function () {
+          const account = pm.response.json().account;
+          pm.expect(account).to.have.property('id');
+          pm.expect(account).to.have.property('userId');
+          pm.expect(account).to.have.property('type');
+          pm.expect(account).to.have.property('createdAt');
+      });
+
+      pm.test('Store accountId for later use', function () {
+          const account = pm.response.json().account;
+          pm.collectionVariables.set('accountId', account.id);
+      });
+    language: text/javascript
+    type: afterResponse
+type: http
+url: "{{baseUrl}}/accounts"

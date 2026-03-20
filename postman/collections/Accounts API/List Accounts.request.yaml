@@ -1,0 +1,21 @@
+method: GET
+order: 3000
+queryParams:
+  - description: The user ID to filter accounts by
+    key: userId
+    value: user-123
+scripts:
+  - code: |-
+      pm.test('Status code is 200', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('Response has accounts array', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData).to.have.property('accounts');
+          pm.expect(jsonData.accounts).to.be.an('array');
+      });
+    language: text/javascript
+    type: afterResponse
+type: http
+url: "{{baseUrl}}/accounts?userId=user-123"

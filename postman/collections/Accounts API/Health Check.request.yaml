@@ -1,0 +1,21 @@
+method: GET
+order: 6000
+scripts:
+  - code: |-
+      pm.test('Status code is 200', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('Response has status ok', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData.status).to.equal('ok');
+      });
+
+      pm.test('Service is accounts-api', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData.service).to.equal('accounts-api');
+      });
+    language: text/javascript
+    type: afterResponse
+type: http
+url: "{{baseUrl}}/health"

@@ -1,0 +1,23 @@
+name: Error - Account Not Found
+status: 404
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  mode: raw
+  options:
+    raw:
+      language: json
+  raw: |
+    {
+      "error": "Not Found",
+      "message": "Account with id 'nonexistent-id' not found",
+      "statusCode": 404
+    }
+request:
+  method: GET
+  url:
+    raw: "{{baseUrl}}/accounts/:id"
+  pathVariables:
+    - key: id
+      value: nonexistent-id
