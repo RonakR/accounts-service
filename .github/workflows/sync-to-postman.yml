@@ -8,7 +8,7 @@ on:
 jobs:
   sync-to-postman:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,4 +21,4 @@ jobs:
         run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
 
       - name: Push changes to Postman Cloud
-        run: postman workspace push --yes
+        run: postman workspace push -y --report-events
