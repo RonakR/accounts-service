@@ -1,0 +1,72 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/accounts/onboard'
+order: 5000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: text
+  content: |-
+    {
+      "name": "John Doe",
+      "email": "john@example.com",
+      "productId": "product-123",
+      "initialCredit": 50
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Status code is 201', function () {
+          pm.response.to.have.status(201);
+      });
+
+      pm.test('Response has user, account, assignment, and balance', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData).to.have.property('user');
+          pm.expect(jsonData).to.have.property('account');
+          pm.expect(jsonData).to.have.property('assignment');
+          pm.expect(jsonData).to.have.property('balance');
+      });
+
+      pm.test('User has required fields', function () {
+          const user = pm.response.json().user;
+          pm.expect(user).to.have.property('id');
+          pm.expect(user).to.have.property('name');
+          pm.expect(user).to.have.property('email');
+      });
+
+      pm.test('User name and email match request', function () {
+          const user = pm.response.json().user;
+          const requestBody = JSON.parse(pm.request.body.raw);
+          pm.expect(user.name).to.equal(requestBody.name);
+          pm.expect(user.email).to.equal(requestBody.email);
+      });
+
+      pm.test('Account has required fields', function () {
+          const account = pm.response.json().account;
+          pm.expect(account).to.have.property('id');
+          pm.expect(account).to.have.property('userId');
+          pm.expect(account).to.have.property('type');
+          pm.expect(account).to.have.property('createdAt');
+      });
+
+      pm.test('Account userId matches created user', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData.account.userId).to.equal(jsonData.user.id);
+      });
+
+      pm.test('Balance reflects initialCredit', function () {
+          const jsonData = pm.response.json();
+          const requestBody = JSON.parse(pm.request.body.raw);
+          pm.expect(jsonData.balance).to.equal(requestBody.initialCredit);
+      });
+
+      pm.test('Balance is a number', function () {
+          pm.expect(pm.response.json().balance).to.be.a('number');
+      });
+
+      pm.test('Response time is under 1000ms', function () {
+          pm.expect(pm.response.responseTime).to.be.below(1000);
+      });

@@ -1,0 +1,43 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/accounts'
+order: 3000
+queryParams:
+  - key: userId
+    value: user-123
+    description: The user ID to filter accounts by
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Status code is 200', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('Response has accounts array', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData).to.have.property('accounts');
+          pm.expect(jsonData.accounts).to.be.an('array');
+      });
+
+      pm.test('Each account has required fields', function () {
+          const accounts = pm.response.json().accounts;
+          accounts.forEach(function (account) {
+              pm.expect(account).to.have.property('id');
+              pm.expect(account).to.have.property('userId');
+              pm.expect(account).to.have.property('type');
+              pm.expect(account).to.have.property('createdAt');
+          });
+      });
+
+      pm.test('All accounts belong to the requested userId', function () {
+          const accounts = pm.response.json().accounts;
+          const requestedUserId = pm.request.url.query.get('userId');
+          accounts.forEach(function (account) {
+              pm.expect(account.userId).to.equal(requestedUserId);
+          });
+      });
+
+      pm.test('Response time is under 500ms', function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });

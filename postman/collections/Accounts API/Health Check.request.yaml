@@ -1,0 +1,29 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/health'
+order: 6000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Status code is 200', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('Response has status ok', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData.status).to.equal('ok');
+      });
+
+      pm.test('Service is accounts-api', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData.service).to.equal('accounts-api');
+      });
+
+      pm.test('Response is JSON', function () {
+          pm.response.to.be.json;
+      });
+
+      pm.test('Response time is under 200ms', function () {
+          pm.expect(pm.response.responseTime).to.be.below(200);
+      });
