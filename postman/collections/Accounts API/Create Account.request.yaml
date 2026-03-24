@@ -1,17 +1,21 @@
-body:
-  content: |-
-    {
-    	"userId": "u1",
-    	"type": "standard"
-    }
-  type: text
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/accounts'
+order: 1000
 headers:
   - key: Content-Type
     value: application/json
-method: POST
-order: 1000
+body:
+  type: text
+  content: |-
+    {
+      "userId": "u1",
+      "type": "standard"
+    }
 scripts:
-  - code: |-
+  - type: afterResponse
+    language: text/javascript
+    code: |-
       pm.test('Status code is 201', function () {
           pm.response.to.have.status(201);
       });
@@ -21,7 +25,7 @@ scripts:
           pm.expect(jsonData).to.have.property('account');
       });
 
-      pm.test('Account has required fields', function () {
+      pm.test('Account has all required fields', function () {
           const account = pm.response.json().account;
           pm.expect(account).to.have.property('id');
           pm.expect(account).to.have.property('userId');
@@ -29,11 +33,27 @@ scripts:
           pm.expect(account).to.have.property('createdAt');
       });
 
+      pm.test('Account type defaults to standard', function () {
+          const account = pm.response.json().account;
+          pm.expect(account.type).to.equal('standard');
+      });
+
+      pm.test('Account userId matches request', function () {
+          const account = pm.response.json().account;
+          pm.expect(account.userId).to.equal('u1');
+      });
+
+      pm.test('Account id is a non-empty string', function () {
+          const account = pm.response.json().account;
+          pm.expect(account.id).to.be.a('string').and.not.empty;
+      });
+
+      pm.test('createdAt is a valid ISO date string', function () {
+          const account = pm.response.json().account;
+          pm.expect(new Date(account.createdAt).toString()).to.not.equal('Invalid Date');
+      });
+
       pm.test('Store accountId for later use', function () {
           const account = pm.response.json().account;
           pm.collectionVariables.set('accountId', account.id);
       });
-    language: text/javascript
-    type: afterResponse
-type: http
-url: "{{baseUrl}}/accounts"

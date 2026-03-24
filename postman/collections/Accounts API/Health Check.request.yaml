@@ -1,7 +1,11 @@
+$kind: http-request
 method: GET
+url: '{{baseUrl}}/health'
 order: 6000
 scripts:
-  - code: |-
+  - type: afterResponse
+    language: text/javascript
+    code: |-
       pm.test('Status code is 200', function () {
           pm.response.to.have.status(200);
       });
@@ -15,7 +19,11 @@ scripts:
           const jsonData = pm.response.json();
           pm.expect(jsonData.service).to.equal('accounts-api');
       });
-    language: text/javascript
-    type: afterResponse
-type: http
-url: "{{baseUrl}}/health"
+
+      pm.test('Response is JSON', function () {
+          pm.response.to.be.json;
+      });
+
+      pm.test('Response time is under 200ms', function () {
+          pm.expect(pm.response.responseTime).to.be.below(200);
+      });

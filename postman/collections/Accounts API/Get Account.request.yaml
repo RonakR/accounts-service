@@ -1,11 +1,15 @@
+$kind: http-request
 method: GET
+url: '{{baseUrl}}/accounts/:id'
 order: 2000
 pathVariables:
-  - description: The account ID
-    key: id
+  - key: id
     value: a1
+    description: The account ID
 scripts:
-  - code: |-
+  - type: afterResponse
+    language: text/javascript
+    code: |-
       pm.test('Status code is 200', function () {
           pm.response.to.have.status(200);
       });
@@ -16,7 +20,7 @@ scripts:
           pm.expect(jsonData).to.have.property('balance');
       });
 
-      pm.test('Account has required fields', function () {
+      pm.test('Account has all required fields', function () {
           const account = pm.response.json().account;
           pm.expect(account).to.have.property('id');
           pm.expect(account).to.have.property('userId');
@@ -28,7 +32,17 @@ scripts:
           const balance = pm.response.json().balance;
           pm.expect(balance).to.be.a('number');
       });
-    language: text/javascript
-    type: afterResponse
-type: http
-url: "{{baseUrl}}/accounts/:id"
+
+      pm.test('Account id matches requested id', function () {
+          const account = pm.response.json().account;
+          pm.expect(account.id).to.equal(pm.request.url.path.slice(-1)[0]);
+      });
+
+      pm.test('createdAt is a valid ISO date string', function () {
+          const account = pm.response.json().account;
+          pm.expect(new Date(account.createdAt).toString()).to.not.equal('Invalid Date');
+      });
+
+      pm.test('Response time is under 500ms', function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });

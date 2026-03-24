@@ -1,20 +1,24 @@
-body:
-  content: |-
-    {
-    	"amount": 100
-    }
-  type: text
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/accounts/:id/credit'
+order: 4000
 headers:
   - key: Content-Type
     value: application/json
-method: POST
-order: 4000
 pathVariables:
-  - description: The account ID
-    key: id
+  - key: id
     value: a1
+    description: The account ID
+body:
+  type: text
+  content: |-
+    {
+      "amount": 100
+    }
 scripts:
-  - code: |-
+  - type: afterResponse
+    language: text/javascript
+    code: |-
       pm.test('Status code is 200', function () {
           pm.response.to.have.status(200);
       });
@@ -25,11 +29,24 @@ scripts:
           pm.expect(jsonData).to.have.property('balance');
       });
 
+      pm.test('accountId is a non-empty string', function () {
+          const jsonData = pm.response.json();
+          pm.expect(jsonData.accountId).to.be.a('string').and.not.empty;
+      });
+
       pm.test('Balance is a number', function () {
           const balance = pm.response.json().balance;
           pm.expect(balance).to.be.a('number');
       });
-    language: text/javascript
-    type: afterResponse
-type: http
-url: "{{baseUrl}}/accounts/:id/credit"
+
+      pm.test('Balance increased by credited amount', function () {
+          const jsonData = pm.response.json();
+          const requestBody = JSON.parse(pm.request.body.raw);
+          pm.expect(jsonData.balance).to.be.a('number');
+          // Balance should be a finite number after credit
+          pm.expect(isFinite(jsonData.balance)).to.be.true;
+      });
+
+      pm.test('Response time is under 500ms', function () {
+          pm.expect(pm.response.responseTime).to.be.below(500);
+      });
